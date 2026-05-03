@@ -1,0 +1,1 @@
+-- Optional reference categories (app seed script inserts demo data with bcrypt passwords)
