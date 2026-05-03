@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GlassCard } from "../components/ui/GlassCard.jsx";
-import { fetchCategories, fetchProducts } from "../services/api.js";
+import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { MiniMap } from "../components/maps/MiniMap.jsx";
+import { fetchCategories, fetchProducts, fetchVendorPosts, fetchVendors } from "../services/api.js";
 
 function SkeletonGrid() {
   return (
@@ -24,16 +26,20 @@ export function Products() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [q, setQ] = useState("");
   const [categoryId, setCategoryId] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([fetchCategories(), fetchProducts({})])
-      .then(([cats, pdata]) => {
+    Promise.all([fetchCategories(), fetchProducts({}), fetchVendorPosts(), fetchVendors()])
+      .then(([cats, pdata, vp, ven]) => {
         if (cancelled) return;
         setCategories(cats);
         setProducts(pdata.products || []);
+        setPosts(vp || []);
+        setVendors(ven || []);
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {
@@ -64,32 +70,87 @@ export function Products() {
       const cat = categories.find(c => String(c.id) === String(categoryId));
       if (cat) parts.push(cat.name);
     }
-    return parts.length ? parts.join(" · ") : "All items";
+    return parts.length ? parts.join(" · ") : "All catalogue items";
   }, [q, categoryId, categories]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Discover flavors</h1>
-          <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-300">
-            Search across live catalog data, slice by category, and jump into dishes engineered for the glass aesthetic.
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand-600 dark:text-brand-400">Marketplace</p>
+          <h1 className="font-display text-3xl font-bold md:text-4xl">Unified logistics catalogue</h1>
+          <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
+            Vendor storefront posts surface first — pinned corridors with live maps — followed by SKU-grade listings spanning goods beyond traditional food delivery.
           </p>
         </div>
         <GlassCard className="w-full max-w-md p-4 md:w-auto">
-          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Search</label>
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Omni search</label>
           <input
             value={q}
             onChange={e => setQ(e.target.value)}
-            placeholder="Burger, pizza, citrus..."
+            placeholder="Electronics, pharma, meal kits..."
             className="mt-1 w-full rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm outline-none ring-brand-500/30 focus:ring-2 dark:border-white/10 dark:bg-slate-950/40"
           />
         </GlassCard>
       </div>
 
+      {!loading && posts.length > 0 && (
+        <section className="space-y-4">
+          <SectionHeading
+            eyebrow="Vendor intelligence"
+            title="Featured storefront posts"
+            subtitle="Pinned dispatches from sellers appear ahead of SKUs — complete with geo anchors for buyers and couriers."
+          />
+          <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-3">
+            {posts.map(post => (
+              <GlassCard key={post.id} className="min-w-[280px] space-y-4 p-5 md:min-w-0">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">{post.business_name}</p>
+                  <h3 className="font-display text-xl font-semibold">{post.title}</h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{post.body}</p>
+                </div>
+                <MiniMap
+                  lat={post.latitude ?? post.vendor_latitude}
+                  lng={post.longitude ?? post.vendor_longitude}
+                  label={post.business_name}
+                  height={170}
+                />
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!loading && vendors.length > 0 && (
+        <section className="space-y-4">
+          <SectionHeading
+            eyebrow="Partner mesh"
+            title="Fulfillment hubs on the map"
+            subtitle="Every active vendor exposes HQ coordinates — ideal for routing algorithms or executive geography reviews."
+          />
+          <div className="grid gap-6 md:grid-cols-2">
+            {vendors.map(v => (
+              <GlassCard key={v.id} className="space-y-4 p-5">
+                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <h3 className="font-display text-xl font-semibold">{v.business_name}</h3>
+                    {v.tagline && <p className="text-sm text-brand-600 dark:text-brand-300">{v.tagline}</p>}
+                    <p className="text-sm text-slate-600 dark:text-slate-300">{v.address}</p>
+                  </div>
+                  <Link className="text-sm font-semibold text-accent-600 dark:text-accent-300" to="/marketplace">
+                    Browse listings →
+                  </Link>
+                </div>
+                <MiniMap lat={v.latitude} lng={v.longitude} label={v.business_name} height={200} />
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="flex flex-wrap gap-2">
         <FilterChip active={!categoryId} onClick={() => setCategoryId("")}>
-          All
+          All categories
         </FilterChip>
         {categories.map(c => (
           <FilterChip key={c.id} active={String(categoryId) === String(c.id)} onClick={() => setCategoryId(String(c.id))}>
@@ -103,7 +164,7 @@ export function Products() {
       {loading ? (
         <SkeletonGrid />
       ) : products.length === 0 ? (
-        <GlassCard className="p-10 text-center text-slate-600 dark:text-slate-300">No plates match those filters yet.</GlassCard>
+        <GlassCard className="p-10 text-center text-slate-600 dark:text-slate-300">No SKUs match those filters yet.</GlassCard>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, idx) => (
@@ -120,7 +181,7 @@ export function Products() {
                     {p.image_url ? (
                       <img src={p.image_url} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-4xl">🍽️</div>
+                      <div className="flex h-full items-center justify-center text-4xl">📦</div>
                     )}
                     <div className="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
                       {p.vendor_name}

@@ -41,14 +41,31 @@ async function ensureVendor(userId, business_name, address) {
   const [rows] = await pool.query("SELECT id FROM vendors WHERE user_id = ?", [userId]);
   if (rows.length) return rows[0].id;
   const [r] = await pool.query(
-    `INSERT INTO vendors (user_id, business_name, description, address, status)
-     VALUES (?, ?, ?, ?, 'active')`,
+    `INSERT INTO vendors (user_id, business_name, tagline, description, address, latitude, longitude, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'active')`,
     [
       userId,
       business_name,
-      "Fresh meals prepared daily. Demo restaurant for the delivery platform.",
-      address
+      "Same-day logistics · parcels · essentials",
+      "Demo storefront showcasing listings on the marketplace map — ships packaged goods and prepared meals.",
+      address,
+      37.7749,
+      -122.4194
     ]
+  );
+  return r.insertId;
+}
+
+async function ensureVendorPost(vendorId, title, body, lat, lng) {
+  const [rows] = await pool.query(
+    "SELECT id FROM vendor_posts WHERE vendor_id = ? AND title = ?",
+    [vendorId, title]
+  );
+  if (rows.length) return rows[0].id;
+  const [r] = await pool.query(
+    `INSERT INTO vendor_posts (vendor_id, title, body, image_url, latitude, longitude, is_active)
+     VALUES (?, ?, ?, NULL, ?, ?, 1)`,
+    [vendorId, title, body, lat, lng]
   );
   return r.insertId;
 }
@@ -143,6 +160,14 @@ async function main() {
     "House-made sparkling citrus refresher.",
     3.75,
     "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80"
+  );
+
+  await ensureVendorPost(
+    vendorId,
+    "Same-night courier corridor",
+    "Pinned dispatch lane covering SOMA ↔ Waterfront — ideal for parcel bursts and temperature-controlled meals.",
+    37.786,
+    -122.401
   );
 
   console.log("Seed complete.");

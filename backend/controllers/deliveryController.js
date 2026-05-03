@@ -1,6 +1,8 @@
+const pool = require("../db");
 const deliveryModel = require("../models/delivery");
 const orderModel = require("../models/order");
 const vendorModel = require("../models/vendor");
+const notificationModel = require("../models/notification");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const listOpenOrders = asyncHandler(async (req, res) => {
@@ -83,6 +85,14 @@ const claimOrder = asyncHandler(async (req, res) => {
   await deliveryModel.addTracking(orderId, person.id, {
     status_note: "Courier picked up the order"
   });
+  notificationModel
+    .notifyCustomer(order.user_id, {
+      type: "courier_assigned",
+      title: "Courier en route",
+      body: `Your order #${orderId} is now out for delivery.`,
+      data: { orderId }
+    })
+    .catch(() => {});
   const updated = await orderModel.findById(orderId);
   res.json({ success: true, order: updated });
 });

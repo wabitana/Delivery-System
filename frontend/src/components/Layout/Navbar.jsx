@@ -5,6 +5,7 @@ import { Sun, Moon, Menu, X, Truck } from "./icons.jsx";
 import { useTheme } from "../../context/ThemeProvider.jsx";
 import { useAuthStore } from "../../store/authStore.js";
 import { fetchCart } from "../../services/api.js";
+import { NotificationBell } from "../notifications/NotificationBell.jsx";
 
 const linkCls =
   "rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-400";
@@ -49,7 +50,7 @@ export function Navbar() {
             <Truck className="h-5 w-5" />
           </span>
           <span>
-            Nimbus<span className="gradient-text"> Delivery</span>
+            Nimbus<span className="gradient-text"> Logistics</span>
           </span>
         </Link>
 
@@ -57,8 +58,11 @@ export function Navbar() {
           <NavLink to="/" end className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
             Home
           </NavLink>
-          <NavLink to="/products" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
-            Menu
+          <NavLink to="/marketplace" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
+            Marketplace
+          </NavLink>
+          <NavLink to="/about" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
+            About
           </NavLink>
           {authed && (
             <>
@@ -73,6 +77,9 @@ export function Navbar() {
               <NavLink to="/dashboard" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
                 Dashboard
               </NavLink>
+              <NavLink to="/settings" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
+                Profile
+              </NavLink>
               {user.role === "delivery" && (
                 <NavLink to="/delivery" className={({ isActive }) => `${linkCls} ${isActive ? "!bg-white/80 dark:!bg-slate-800/80 !text-brand-600 dark:!text-brand-400" : ""}`}>
                   Courier
@@ -83,6 +90,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          {authed && <NotificationBell />}
           <button
             type="button"
             onClick={toggleTheme}
@@ -132,8 +140,11 @@ export function Navbar() {
           <MobileNavLink to="/" onClick={() => setOpen(false)}>
             Home
           </MobileNavLink>
-          <MobileNavLink to="/products" onClick={() => setOpen(false)}>
-            Menu
+          <MobileNavLink to="/marketplace" onClick={() => setOpen(false)}>
+            Marketplace
+          </MobileNavLink>
+          <MobileNavLink to="/about" onClick={() => setOpen(false)}>
+            About
           </MobileNavLink>
           {authed && (
             <>
@@ -142,6 +153,9 @@ export function Navbar() {
               </MobileNavLink>
               <MobileNavLink to="/dashboard" onClick={() => setOpen(false)}>
                 Dashboard
+              </MobileNavLink>
+              <MobileNavLink to="/settings" onClick={() => setOpen(false)}>
+                Profile
               </MobileNavLink>
               {user.role === "delivery" && (
                 <MobileNavLink to="/delivery" onClick={() => setOpen(false)}>

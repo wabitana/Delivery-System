@@ -15,18 +15,22 @@ const login = Joi.object({
 
 const vendorCreate = Joi.object({
   business_name: Joi.string().min(2).max(255).required(),
+  tagline: Joi.string().max(255).allow("", null),
   description: Joi.string().allow("", null),
   address: Joi.string().min(5).max(512).required(),
   latitude: Joi.number().min(-90).max(90).allow(null),
-  longitude: Joi.number().min(-180).max(180).allow(null)
+  longitude: Joi.number().min(-180).max(180).allow(null),
+  cover_image_url: Joi.string().uri().allow("", null)
 });
 
 const vendorUpdate = Joi.object({
   business_name: Joi.string().min(2).max(255),
+  tagline: Joi.string().max(255).allow("", null),
   description: Joi.string().allow("", null),
   address: Joi.string().min(5).max(512),
   latitude: Joi.number().min(-90).max(90).allow(null),
   longitude: Joi.number().min(-180).max(180).allow(null),
+  cover_image_url: Joi.string().uri().allow("", null),
   status: Joi.string().valid("pending", "active", "suspended")
 }).min(1);
 
@@ -105,6 +109,34 @@ const deliveryProfile = Joi.object({
   is_available: Joi.boolean()
 }).min(1);
 
+const profilePatch = Joi.object({
+  full_name: Joi.string().min(2).max(255),
+  phone: Joi.string().max(32).allow("", null),
+  avatar_url: Joi.string().uri().allow("", null),
+  current_password: Joi.string().allow("", null),
+  new_password: Joi.string().min(8).max(128).allow("", null)
+})
+  .min(1)
+  .with("new_password", "current_password");
+
+const vendorPostCreate = Joi.object({
+  title: Joi.string().min(2).max(255).required(),
+  body: Joi.string().allow("", null),
+  image_url: Joi.string().uri().allow("", null),
+  latitude: Joi.number().min(-90).max(90).allow(null),
+  longitude: Joi.number().min(-180).max(180).allow(null),
+  is_active: Joi.boolean()
+});
+
+const vendorPostUpdate = Joi.object({
+  title: Joi.string().min(2).max(255),
+  body: Joi.string().allow("", null),
+  image_url: Joi.string().uri().allow("", null),
+  latitude: Joi.number().min(-90).max(90).allow(null),
+  longitude: Joi.number().min(-180).max(180).allow(null),
+  is_active: Joi.boolean()
+}).min(1);
+
 module.exports = {
   register,
   login,
@@ -120,5 +152,8 @@ module.exports = {
   trackingCreate,
   paymentMock,
   reviewCreate,
-  deliveryProfile
+  deliveryProfile,
+  profilePatch,
+  vendorPostCreate,
+  vendorPostUpdate
 };

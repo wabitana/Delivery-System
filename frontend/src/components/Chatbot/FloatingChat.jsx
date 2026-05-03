@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const FAQ = [
-  { keys: ["hours", "open", "when"], text: "Kitchen partners set their own hours. Demo kitchen runs 10am–10pm local time." },
-  { keys: ["fee", "delivery fee", "cost"], text: "Delivery fee is calculated at checkout (default mock fee applies)." },
-  { keys: ["track", "where", "order"], text: "Open Dashboard → select an order to see live tracking and timeline updates." },
-  { keys: ["pay", "payment", "card"], text: "Checkout uses a mock wallet payment — no real charges." },
-  { keys: ["vendor", "sell", "partner"], text: "Register as a vendor, complete your shop profile, then add menu items from your dashboard." },
-  { keys: ["hello", "hi", "hey"], text: "Hey! I can help with orders, fees, tracking, and vendor onboarding." }
+  { keys: ["hours", "open", "when"], text: "Fulfillment partners publish SLAs on their storefront posts — demo hubs stay active around the clock." },
+  { keys: ["fee", "delivery fee", "cost"], text: "Shipping economics are recomputed per checkout with configurable delivery fee + tax rates." },
+  { keys: ["track", "where", "order"], text: "Open Dashboard → jump into any shipment for milestone telemetry + courier breadcrumbs." },
+  { keys: ["pay", "payment", "card"], text: "Treasury flow is mocked via wallet completion — swap for PSP tokens when you graduate beyond demos." },
+  { keys: ["vendor", "sell", "partner"], text: "Register as a vendor, anchor HQ lat/long, publish spotlight posts, then list SKUs from Vendor ops." },
+  { keys: ["notify", "notification", "courier"], text: "Couriers receive bell alerts when shipments fund or reach pickup-ready states." },
+  { keys: ["hello", "hi", "hey"], text: "Hey! Ask about marketplace posts, logistics personas, or billing mocks." }
 ];
 
 function replyFor(message) {
@@ -34,7 +35,7 @@ export function FloatingChat() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
-    { role: "assistant", text: "Hi — I’m Nimbus Assist. Ask about orders, fees, or vendors." }
+    { role: "assistant", text: "Hi — I’m Nimbus Assist. Ask about shipments, geo posts, notifications, or onboarding." }
   ]);
   const [typing, setTyping] = useState(false);
   const bottomRef = useRef(null);

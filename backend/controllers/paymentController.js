@@ -1,6 +1,7 @@
 const orderModel = require("../models/order");
 const paymentModel = require("../models/payment");
 const deliveryModel = require("../models/delivery");
+const notificationModel = require("../models/notification");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 const completeMock = asyncHandler(async (req, res) => {
@@ -22,6 +23,14 @@ const completeMock = asyncHandler(async (req, res) => {
     await deliveryModel.addTracking(orderId, null, {
       status_note: "Payment received — restaurant notified"
     });
+    notificationModel
+      .notifyAvailableCouriers({
+        type: "order_paid",
+        title: "Shipment funded",
+        body: `Order #${orderId} payment cleared — monitor pickup board.`,
+        data: { orderId }
+      })
+      .catch(() => {});
   }
   const updatedOrder = await orderModel.findById(orderId);
   const updatedPayment = await paymentModel.findByOrderId(orderId);

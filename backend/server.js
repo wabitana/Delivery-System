@@ -13,6 +13,9 @@ const paymentRoutes = require("./routes/payments");
 const deliveryRoutes = require("./routes/delivery");
 const reviewRoutes = require("./routes/reviews");
 const dashboardRoutes = require("./routes/dashboard");
+const notificationRoutes = require("./routes/notifications");
+const vendorPostRoutes = require("./routes/vendorPosts");
+const userRoutes = require("./routes/users");
 
 const app = express();
 
@@ -38,6 +41,9 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/delivery", deliveryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/vendor-posts", vendorPostRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

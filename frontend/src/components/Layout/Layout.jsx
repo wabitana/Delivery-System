@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "./Navbar.jsx";
+import { Footer } from "./Footer.jsx";
 import { FloatingChat } from "../Chatbot/FloatingChat.jsx";
 import { ParticleCanvas } from "../Background/ParticleCanvas.jsx";
 
@@ -11,7 +12,7 @@ export function Layout() {
     <div className="relative min-h-screen mesh-bg">
       <ParticleCanvas />
       <Navbar />
-      <main className="relative mx-auto max-w-6xl px-4 pb-24 pt-28 md:px-6">
+      <main className="relative mx-auto max-w-6xl px-4 pb-8 pt-28 md:px-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -24,6 +25,7 @@ export function Layout() {
           </motion.div>
         </AnimatePresence>
       </main>
+      <Footer />
       <FloatingChat />
     </div>
   );

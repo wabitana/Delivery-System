@@ -5,9 +5,12 @@ import { GlassCard } from "../components/ui/GlassCard.jsx";
 import {
   createProduct,
   createVendor,
+  createVendorPost,
   deleteProduct,
+  deleteVendorPost,
   fetchDashboardUser,
   fetchDashboardVendor,
+  fetchMyVendorPosts,
   fetchOrders,
   fetchProducts,
   fetchVendorMine,
@@ -25,10 +28,21 @@ export function Dashboard() {
   const [vendorProfile, setVendorProfile] = useState(undefined);
   const [vendorOrders, setVendorOrders] = useState([]);
   const [vendorProducts, setVendorProducts] = useState([]);
+  const [vendorPosts, setVendorPosts] = useState([]);
   const [vendorForm, setVendorForm] = useState({
     business_name: "",
     address: "",
-    description: ""
+    description: "",
+    tagline: "",
+    latitude: "",
+    longitude: "",
+    cover_image_url: ""
+  });
+  const [postForm, setPostForm] = useState({
+    title: "",
+    body: "",
+    latitude: "",
+    longitude: ""
   });
   const [productForm, setProductForm] = useState({
     name: "",
@@ -46,15 +60,20 @@ export function Dashboard() {
   async function refreshVendor() {
     const mine = await fetchVendorMine();
     setVendorProfile(mine);
-    if (!mine) return;
-    const [vd, vo, vp] = await Promise.all([
+    if (!mine) {
+      setVendorPosts([]);
+      return;
+    }
+    const [vd, vo, vp, vposts] = await Promise.all([
       fetchDashboardVendor(),
       fetchOrders("vendor"),
-      fetchProducts({ vendor_id: mine.id, include_unavailable: "1" })
+      fetchProducts({ vendor_id: mine.id, include_unavailable: "1" }),
+      fetchMyVendorPosts()
     ]);
     setVendorDash(vd);
     setVendorOrders(vo);
     setVendorProducts(vp.products || []);
+    setVendorPosts(vposts || []);
   }
 
   useEffect(() => {
@@ -70,7 +89,11 @@ export function Dashboard() {
       const v = await createVendor({
         business_name: vendorForm.business_name,
         address: vendorForm.address,
-        description: vendorForm.description
+        description: vendorForm.description,
+        tagline: vendorForm.tagline || undefined,
+        latitude: vendorForm.latitude ? Number(vendorForm.latitude) : undefined,
+        longitude: vendorForm.longitude ? Number(vendorForm.longitude) : undefined,
+        cover_image_url: vendorForm.cover_image_url || undefined
       });
       setVendorProfile(v);
       toast.success("Kitchen live");
@@ -112,6 +135,34 @@ export function Dashboard() {
     try {
       await deleteProduct(id);
       toast.success("Removed");
+      refreshVendor().catch(() => {});
+    } catch {
+      /* toast */
+    }
+  }
+
+  async function submitVendorPost(e) {
+    e.preventDefault();
+    if (!vendorProfile) return;
+    try {
+      await createVendorPost({
+        title: postForm.title,
+        body: postForm.body,
+        latitude: postForm.latitude ? Number(postForm.latitude) : null,
+        longitude: postForm.longitude ? Number(postForm.longitude) : null
+      });
+      toast.success("Storefront post published");
+      setPostForm({ title: "", body: "", latitude: "", longitude: "" });
+      refreshVendor().catch(() => {});
+    } catch {
+      /* toast */
+    }
+  }
+
+  async function removeVendorPost(id) {
+    try {
+      await deleteVendorPost(id);
+      toast.success("Post removed");
       refreshVendor().catch(() => {});
     } catch {
       /* toast */
@@ -211,9 +262,9 @@ export function Dashboard() {
         <div className="space-y-8">
           {!vendorProfile ? (
             <GlassCard className="p-6">
-              <h2 className="font-display text-lg font-semibold">Launch your kitchen</h2>
+              <h2 className="font-display text-lg font-semibold">Launch your logistics hub</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                Finish onboarding to unlock menu publishing and live ticket boards.
+                Publish HQ coordinates so buyers & couriers visualize coverage instantly.
               </p>
               <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitVendor}>
                 <input
@@ -224,14 +275,38 @@ export function Dashboard() {
                   className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
                 />
                 <input
-                  required
-                  placeholder="Pickup address"
-                  value={vendorForm.address}
-                  onChange={e => setVendorForm(f => ({ ...f, address: e.target.value }))}
+                  placeholder="Tagline"
+                  value={vendorForm.tagline}
+                  onChange={e => setVendorForm(f => ({ ...f, tagline: e.target.value }))}
                   className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
                 />
+                <input
+                  required
+                  placeholder="HQ / pickup address"
+                  value={vendorForm.address}
+                  onChange={e => setVendorForm(f => ({ ...f, address: e.target.value }))}
+                  className="md:col-span-2 rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                />
+                <input
+                  placeholder="Latitude"
+                  value={vendorForm.latitude}
+                  onChange={e => setVendorForm(f => ({ ...f, latitude: e.target.value }))}
+                  className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                />
+                <input
+                  placeholder="Longitude"
+                  value={vendorForm.longitude}
+                  onChange={e => setVendorForm(f => ({ ...f, longitude: e.target.value }))}
+                  className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                />
+                <input
+                  placeholder="Cover image URL"
+                  value={vendorForm.cover_image_url}
+                  onChange={e => setVendorForm(f => ({ ...f, cover_image_url: e.target.value }))}
+                  className="md:col-span-2 rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                />
                 <textarea
-                  placeholder="Story / cuisine focus"
+                  placeholder="Store narrative / SLA highlights"
                   value={vendorForm.description}
                   onChange={e => setVendorForm(f => ({ ...f, description: e.target.value }))}
                   className="md:col-span-2 rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
@@ -241,7 +316,7 @@ export function Dashboard() {
                   type="submit"
                   className="md:col-span-2 rounded-full bg-gradient-to-r from-brand-500 to-accent-500 py-3 text-sm font-semibold text-white"
                 >
-                  Save kitchen profile
+                  Save hub profile
                 </button>
               </form>
             </GlassCard>
@@ -275,7 +350,7 @@ export function Dashboard() {
                 </GlassCard>
 
                 <GlassCard className="p-6 lg:col-span-2">
-                  <h3 className="font-display text-lg font-semibold">Add menu item</h3>
+                  <h3 className="font-display text-lg font-semibold">Publish SKU</h3>
                   <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitProduct}>
                     <input
                       required
@@ -310,11 +385,73 @@ export function Dashboard() {
                       type="submit"
                       className="md:col-span-2 rounded-full bg-slate-900 py-3 text-sm font-semibold text-white dark:bg-white dark:text-slate-900"
                     >
-                      Publish dish
+                      Publish SKU
                     </button>
                   </form>
                 </GlassCard>
               </div>
+
+              <GlassCard className="p-6">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h3 className="font-display text-lg font-semibold">Storefront posts</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                      Featured dispatches appear ahead of SKUs on the marketplace — pin corridors or promos with geo context.
+                    </p>
+                  </div>
+                </div>
+                <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={submitVendorPost}>
+                  <input
+                    required
+                    placeholder="Headline"
+                    value={postForm.title}
+                    onChange={e => setPostForm(f => ({ ...f, title: e.target.value }))}
+                    className="md:col-span-2 rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                  />
+                  <textarea
+                    placeholder="Story"
+                    value={postForm.body}
+                    onChange={e => setPostForm(f => ({ ...f, body: e.target.value }))}
+                    className="md:col-span-2 rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                    rows={2}
+                  />
+                  <input
+                    placeholder="Pin latitude"
+                    value={postForm.latitude}
+                    onChange={e => setPostForm(f => ({ ...f, latitude: e.target.value }))}
+                    className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                  />
+                  <input
+                    placeholder="Pin longitude"
+                    value={postForm.longitude}
+                    onChange={e => setPostForm(f => ({ ...f, longitude: e.target.value }))}
+                    className="rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                  />
+                  <button
+                    type="submit"
+                    className="md:col-span-2 rounded-full bg-gradient-to-r from-accent-500 to-brand-500 py-3 text-sm font-semibold text-white"
+                  >
+                    Push live to marketplace
+                  </button>
+                </form>
+                <div className="mt-6 space-y-3">
+                  {vendorPosts.map(vp => (
+                    <div
+                      key={vp.id}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/15 bg-white/35 px-3 py-3 text-sm dark:border-white/10 dark:bg-slate-950/40"
+                    >
+                      <div>
+                        <p className="font-semibold">{vp.title}</p>
+                        <p className="text-xs text-slate-500">{vp.body}</p>
+                      </div>
+                      <button type="button" className="text-xs font-semibold text-red-600" onClick={() => removeVendorPost(vp.id)}>
+                        Retire
+                      </button>
+                    </div>
+                  ))}
+                  {vendorPosts.length === 0 && <p className="text-sm text-slate-500">No spotlight posts yet.</p>}
+                </div>
+              </GlassCard>
 
               <GlassCard className="p-6">
                 <div className="flex items-center justify-between gap-3">

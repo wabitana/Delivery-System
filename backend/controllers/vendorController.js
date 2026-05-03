@@ -23,10 +23,12 @@ const create = asyncHandler(async (req, res) => {
   const vendor = await vendorModel.create({
     user_id: req.user.id,
     business_name: body.business_name,
+    tagline: body.tagline,
     description: body.description,
     address: body.address,
     latitude: body.latitude,
     longitude: body.longitude,
+    cover_image_url: body.cover_image_url,
     status: "active"
   });
   res.status(201).json({ success: true, vendor });

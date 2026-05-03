@@ -5,6 +5,7 @@ const orderModel = require("../models/order");
 const paymentModel = require("../models/payment");
 const vendorModel = require("../models/vendor");
 const deliveryModel = require("../models/delivery");
+const notificationModel = require("../models/notification");
 const asyncHandler = require("../middlewares/asyncHandler");
 
 async function loadOrderAuth(orderId, user) {
@@ -92,6 +93,23 @@ const checkout = asyncHandler(async (req, res) => {
 
     await conn.commit();
 
+    notificationModel
+      .notifyVendorOwner(vendorId, {
+        type: "order_new",
+        title: "New customer order",
+        body: `Order #${orderId} was placed and is awaiting payment.`,
+        data: { orderId }
+      })
+      .catch(() => {});
+    notificationModel
+      .notifyAvailableCouriers({
+        type: "order_created",
+        title: "New shipment request",
+        body: `Order #${orderId} entered the network (payment pending).`,
+        data: { orderId }
+      })
+      .catch(() => {});
+
     const order = await orderModel.findById(orderId);
     const items = await orderModel.findItems(orderId);
     const payment = await paymentModel.findByOrderId(orderId);
@@ -168,10 +186,22 @@ const updateStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: "Cannot cancel delivered order" });
   }
 
+  const prevStatus = order.status;
   await orderModel.updateStatus(orderId, status);
   await deliveryModel.addTracking(orderId, ctx.deliveryPerson?.id || null, {
     status_note: `Status updated to ${status.replace(/_/g, " ")}`
   });
+
+  if (status === "ready_for_pickup" && prevStatus !== "ready_for_pickup") {
+    notificationModel
+      .notifyAvailableCouriers({
+        type: "pickup_ready",
+        title: "Pickup ready — claim route",
+        body: `Order #${orderId} is staged for courier pickup.`,
+        data: { orderId }
+      })
+      .catch(() => {});
+  }
 
   const updated = await orderModel.findById(orderId);
   res.json({ success: true, order: updated });
@@ -195,10 +225,21 @@ const simulateStep = asyncHandler(async (req, res) => {
   if (next === order.status) {
     return res.json({ success: true, order, message: "No further steps" });
   }
+  const prevStatus = order.status;
   await orderModel.updateStatus(orderId, next);
   await deliveryModel.addTracking(orderId, null, {
     status_note: `(Simulation) Advanced to ${next.replace(/_/g, " ")}`
   });
+  if (next === "ready_for_pickup" && prevStatus !== "ready_for_pickup") {
+    notificationModel
+      .notifyAvailableCouriers({
+        type: "pickup_ready",
+        title: "Pickup ready — claim route",
+        body: `Order #${orderId} is staged for courier pickup.`,
+        data: { orderId }
+      })
+      .catch(() => {});
+  }
   const updated = await orderModel.findById(orderId);
   const tracking = await deliveryModel.listTracking(orderId);
   res.json({ success: true, order: updated, tracking });

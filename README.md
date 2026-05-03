@@ -17,6 +17,14 @@ mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS delivery_app CHARACTER SET ut
 mysql -u root -p delivery_app < backend/database/schema.sql
 ```
 
+If you already initialized an older schema, apply additive migrations once:
+
+```bash
+mysql -u root -p delivery_app < backend/database/migrations/002_notifications_posts_profile.sql
+```
+
+Ignore duplicate-column errors if you selectively ran statements previously — rerunning `CREATE TABLE IF NOT EXISTS` is safe.
+
 Seed demo users, a kitchen, categories, and dishes:
 
 ```bash

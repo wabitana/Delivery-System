@@ -33,15 +33,17 @@ async function listAll() {
 
 async function create(data) {
   const [r] = await pool.query(
-    `INSERT INTO vendors (user_id, business_name, description, address, latitude, longitude, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO vendors (user_id, business_name, tagline, description, address, latitude, longitude, cover_image_url, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.user_id,
       data.business_name,
+      data.tagline || null,
       data.description || null,
       data.address,
       data.latitude ?? null,
       data.longitude ?? null,
+      data.cover_image_url || null,
       data.status || "active"
     ]
   );

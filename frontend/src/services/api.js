@@ -177,3 +177,45 @@ export async function fetchReviewsVendor(vendorId) {
   const { data } = await api.get(`/reviews/vendor/${vendorId}`);
   return data;
 }
+
+export async function fetchVendorPosts() {
+  const { data } = await api.get("/vendor-posts");
+  return data.posts;
+}
+
+export async function fetchMyVendorPosts() {
+  const { data } = await api.get("/vendor-posts/mine");
+  return data.posts;
+}
+
+export async function createVendorPost(body) {
+  const { data } = await api.post("/vendor-posts", body);
+  return data.post;
+}
+
+export async function deleteVendorPost(id) {
+  await api.delete(`/vendor-posts/${id}`);
+}
+
+export async function fetchUnreadNotificationCount() {
+  const { data } = await api.get("/notifications/unread-count");
+  return data.count;
+}
+
+export async function fetchNotifications(params) {
+  const { data } = await api.get("/notifications", { params });
+  return data.notifications;
+}
+
+export async function markNotificationRead(id) {
+  await api.patch(`/notifications/${id}/read`);
+}
+
+export async function markAllNotificationsRead() {
+  await api.patch("/notifications/read-all");
+}
+
+export async function patchProfile(body) {
+  const { data } = await api.patch("/users/me", body);
+  return data.user;
+}
