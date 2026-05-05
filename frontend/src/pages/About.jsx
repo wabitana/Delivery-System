@@ -5,16 +5,16 @@ import { SectionHeading } from "../components/ui/SectionHeading.jsx";
 
 const pillars = [
   {
-    title: "Unified commerce graph",
-    body: "Stores, parcels, perishables, and routed services share one ledger — no duplicate onboarding flows."
+    title: "Unified delivery network",
+    body: "Local shops, parcel services, and specialized couriers share one digital ecosystem — eliminating fragmented onboarding."
   },
   {
-    title: "Courier-grade observability",
-    body: "Pickup milestones fan out as structured notifications so riders never miss funded shipments."
+    title: "Real-time visibility",
+    body: "Every pickup and drop-off milestone is tracked with automated alerts so dispatchers and drivers stay perfectly synced."
   },
   {
-    title: "Trusted sandbox economics",
-    body: "Wallet mocks emulate treasury rails without touching PCI scope — ideal for investor demos."
+    title: "Secure demo infrastructure",
+    body: "Integrated payment simulations allow for realistic transaction testing without requiring complex PCI compliance."
   }
 ];
 
@@ -24,9 +24,9 @@ export default function About() {
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div>
           <SectionHeading
-            eyebrow="Company narrative"
-            title="Nimbus is built for general commerce logistics — not just meals."
-            subtitle="From boutique retailers to cold-chain bundles, our mesh orchestrates seller posts, buyer carts, and courier alerts across one polished surface."
+            eyebrow="Platform Mission"
+            title="A universal delivery cloud built for every type of commerce."
+            subtitle="From local retail to city-wide courier services, our platform orchestrates vendor listings, customer orders, and driver alerts in one unified workspace."
           />
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-8 flex flex-wrap gap-3">
             <Link
@@ -39,21 +39,21 @@ export default function About() {
               to="/register"
               className="rounded-full border border-white/30 bg-white/50 px-6 py-3 text-sm font-semibold backdrop-blur dark:border-white/10 dark:bg-slate-900/40"
             >
-              Partner with us
+              Become a partner
             </Link>
           </motion.div>
         </div>
         <GlassCard className="p-8">
-          <p className="text-sm font-semibold text-brand-600 dark:text-brand-400">Executive snapshot</p>
+          <p className="text-sm font-semibold text-brand-600 dark:text-brand-400">Platform Snapshot</p>
           <ul className="mt-4 space-y-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             <li>
-              <span className="font-semibold text-slate-900 dark:text-white">Why now?</span> Buyers expect DoorDash-level UX even for non-food categories — we ship that baseline out of the box.
+              <span className="font-semibold text-slate-900 dark:text-white">Why choose us?</span> Customers expect premium tracking for every purchase — we provide that professional infrastructure out of the box.
             </li>
             <li>
-              <span className="font-semibold text-slate-900 dark:text-white">Who wins?</span> Operators gain telemetry; partners publish geo posts; couriers receive contextual alerts without noisy SMS bills.
+              <span className="font-semibold text-slate-900 dark:text-white">Who benefits?</span> Businesses gain live data; vendors can map their reach; and couriers receive clear, real-time job instructions.
             </li>
             <li>
-              <span className="font-semibold text-slate-900 dark:text-white">What ships today?</span> Auth, carts, vendor storefront posts with maps, dashboards, notification hub, and courier boards — all backed by MySQL constraints.
+              <span className="font-semibold text-slate-900 dark:text-white">What’s included?</span> Secure login, shopping carts, map-based storefronts, live tracking, and driver boards — all powered by a reliable database.
             </li>
           </ul>
         </GlassCard>
@@ -73,16 +73,16 @@ export default function About() {
       <GlassCard className="p-8">
         <SectionHeading
           align="center"
-          eyebrow="Roadmap transparency"
-          title="What “company-level” means on this codebase"
-          subtitle="Every promise below maps to a module you can audit — controllers stay thin, models encapsulate SQL, notifications ride dedicated tables."
+          eyebrow="Development Standards"
+          title="Professional architecture for modern delivery"
+          subtitle="Our codebase is built for scale — featuring secure user sessions, automated database triggers for order updates, and a modular design."
         />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {[
-            "SOC-ready foundations with JWT rotation hooks.",
-            "Structured courier inbox fed by SQL triggers from lifecycle transitions.",
-            "Glass UI kit tuned for marketing sites & ops consoles simultaneously.",
-            "Vendor geo storytelling via Leaflet + storefront posts."
+            "Secure authentication with modern session protection.",
+            "Live driver inboxes powered by real-time order status updates.",
+            "Premium user interface designed for both web and mobile access.",
+            "Interactive location services for vendors and customers via mapping tools."
           ].map(line => (
             <div key={line} className="rounded-2xl border border-white/15 bg-white/35 px-4 py-4 text-sm font-medium dark:border-white/10 dark:bg-slate-950/40">
               {line}

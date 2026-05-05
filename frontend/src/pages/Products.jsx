@@ -65,12 +65,12 @@ export function Products() {
 
   const filtersLabel = useMemo(() => {
     const parts = [];
-    if (q.trim()) parts.push(`Search “${q.trim()}”`);
+    if (q.trim()) parts.push(`Searching for “${q.trim()}”`);
     if (categoryId) {
       const cat = categories.find(c => String(c.id) === String(categoryId));
       if (cat) parts.push(cat.name);
     }
-    return parts.length ? parts.join(" · ") : "All catalogue items";
+    return parts.length ? parts.join(" · ") : "All platform items";
   }, [q, categoryId, categories]);
 
   return (
@@ -78,17 +78,17 @@ export function Products() {
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand-600 dark:text-brand-400">Marketplace</p>
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Unified logistics catalogue</h1>
+          <h1 className="font-display text-3xl font-bold md:text-4xl">General Delivery Catalog</h1>
           <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
-            Vendor storefront posts surface first — pinned corridors with live maps — followed by SKU-grade listings spanning goods beyond traditional food delivery.
+            Discover products from local shops and retailers. Browse featured storefront updates on the map, followed by a wide range of items ready for delivery to your doorstep.
           </p>
         </div>
         <GlassCard className="w-full max-w-md p-4 md:w-auto">
-          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Omni search</label>
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Universal Search</label>
           <input
             value={q}
             onChange={e => setQ(e.target.value)}
-            placeholder="Electronics, pharma, meal kits..."
+            placeholder="Search electronics, essentials, gifts..."
             className="mt-1 w-full rounded-xl border border-white/30 bg-white/60 px-3 py-2 text-sm outline-none ring-brand-500/30 focus:ring-2 dark:border-white/10 dark:bg-slate-950/40"
           />
         </GlassCard>
@@ -97,9 +97,9 @@ export function Products() {
       {!loading && posts.length > 0 && (
         <section className="space-y-4">
           <SectionHeading
-            eyebrow="Vendor intelligence"
-            title="Featured storefront posts"
-            subtitle="Pinned dispatches from sellers appear ahead of SKUs — complete with geo anchors for buyers and couriers."
+            eyebrow="Shop Updates"
+            title="Featured Storefronts"
+            subtitle="View the latest posts and local service alerts from our verified delivery partners."
           />
           <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-3">
             {posts.map(post => (
@@ -124,9 +124,9 @@ export function Products() {
       {!loading && vendors.length > 0 && (
         <section className="space-y-4">
           <SectionHeading
-            eyebrow="Partner mesh"
-            title="Fulfillment hubs on the map"
-            subtitle="Every active vendor exposes HQ coordinates — ideal for routing algorithms or executive geography reviews."
+            eyebrow="Delivery Network"
+            title="Local Fulfillment Hubs"
+            subtitle="Explore our active delivery zones and find storefronts nearest to you."
           />
           <div className="grid gap-6 md:grid-cols-2">
             {vendors.map(v => (
@@ -138,7 +138,7 @@ export function Products() {
                     <p className="text-sm text-slate-600 dark:text-slate-300">{v.address}</p>
                   </div>
                   <Link className="text-sm font-semibold text-accent-600 dark:text-accent-300" to="/marketplace">
-                    Browse listings →
+                    View Items →
                   </Link>
                 </div>
                 <MiniMap lat={v.latitude} lng={v.longitude} label={v.business_name} height={200} />
@@ -150,7 +150,7 @@ export function Products() {
 
       <div className="flex flex-wrap gap-2">
         <FilterChip active={!categoryId} onClick={() => setCategoryId("")}>
-          All categories
+          All Categories
         </FilterChip>
         {categories.map(c => (
           <FilterChip key={c.id} active={String(categoryId) === String(c.id)} onClick={() => setCategoryId(String(c.id))}>
@@ -164,7 +164,7 @@ export function Products() {
       {loading ? (
         <SkeletonGrid />
       ) : products.length === 0 ? (
-        <GlassCard className="p-10 text-center text-slate-600 dark:text-slate-300">No SKUs match those filters yet.</GlassCard>
+        <GlassCard className="p-10 text-center text-slate-600 dark:text-slate-300">No items found matching these filters.</GlassCard>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, idx) => (
