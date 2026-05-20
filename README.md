@@ -1,3 +1,16 @@
+### Group Name and Members
+
+| Name             | ID                  |  Section       |
+|------------------|---------------------|----------------|
+| Wabi Tena        | UGR/37898/17        |      1         |
+| Yeroman Diriba   | UGR/37967/17        |      2         |
+| Elsabet Wondimu  | UGR/36775/17        |      2         |
+| Biniam Gululat   | UGR/38342/17        |      1         |
+| Adana Mitiku     | UGR/36373/17        |      2         |
+| Lemi Megersa     | UGR/37310/17        |      2         |
+
+
+
 # Nimbus Delivery Platform
 
 Production-style food delivery stack with a React (Vite) glassmorphism UI, Express REST API, JWT auth, and MySQL persistence modeled after marketplace platforms.
@@ -106,5 +119,8 @@ frontend/
 | backend  | `npm run seed` | Demo dataset        |
 | frontend | `npm run dev`| Vite dev server        |
 | frontend | `npm run build` | Optimized bundle    |
+
+
+More SQL Code present in Controllers,Models....... Check Them out
 
 Happy shipping!
